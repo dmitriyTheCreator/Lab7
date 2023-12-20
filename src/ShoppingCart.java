@@ -63,28 +63,14 @@ public class ShoppingCart{
     public String formatTicket(){
         if (items.size() == 0)
             return "No items.";
-        List<String[]> lines = new ArrayList<String[]>();
+        double total = calculateItemsParameters();
+        return getFormattedTable(total);
+    }
+    private String getFormattedTable(double total) {
+        List<String[]> lines = convertItemsToTableLines();
         String[] header = {"#","Item","Price","Quan.","Discount","Total"};
         int[] align = new int[] { 1, -1, 1, 1, 1, 1 };
-        // formatting each line 
-        double total = 0.00;
-        int  index = 0;
-        for (Item item : items) {
-            int discount = calculateDiscount(item.getType(), item.getQuantity());
-            double itemTotal = item.getPrice() * item.getQuantity() * (100.00 - discount) / 100.00;
-            item.setDiscount(discount);
-            item.setTotal(itemTotal);
-            lines.add(new String[]{
-                    String.valueOf(++index),
-                    item.getTitle(),
-                    MONEY.format(item.getPrice()),
-                    String.valueOf(item.getQuantity()),
-                    (discount == 0) ? "-" : (String.valueOf(discount) + "%"),
-                    MONEY.format(itemTotal)
-            });
-            total += itemTotal;
-        }
-        String[] footer = { String.valueOf(index),"","","","",
+        String[] footer = { String.valueOf(lines.size()),"","","","",
                 MONEY.format(total) };
         // formatting table
         // column max length
@@ -261,5 +247,33 @@ public class ShoppingCart{
             appendFormatted(sb, line[i], align[i], width[i]);
         if(newLine)
             appendSeparator(sb, 1);
+    }
+
+    private double calculateItemsParameters() {
+        double total = 0.00;
+        for (Item item : items) {
+            int discount = calculateDiscount(item.getType(), item.getQuantity());
+            double itemTotal = item.getPrice() * item.getQuantity() * (100.00 - discount) / 100.00;
+            item.setDiscount(discount);
+            item.setTotal(itemTotal);
+            total += itemTotal;
+        }
+        return total;
+    }
+
+    private List<String[]> convertItemsToTableLines(){
+        List<String[]> lines = new ArrayList<String[]>();
+        int index = 0;
+        for (Item item : items) {
+            lines.add(new String[]{
+                    String.valueOf(++index),
+                    item.getTitle(),
+                    MONEY.format(item.getPrice()),
+                    String.valueOf(item.getQuantity()),
+                    (item.getDiscount() == 0) ? "-" : (String.valueOf(item.getDiscount()) + "%"),
+                    MONEY.format(item.getTotal())
+            });
+        }
+        return lines;
     }
 }

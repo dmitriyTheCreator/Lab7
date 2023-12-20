@@ -91,19 +91,16 @@ public class ShoppingCart{
             appendFormattedLine(sb, header, align, width, true);
 
         // separator
-        for (int i = 0; i < lineLength; i++)
-            sb.append("-");
-        appendSeparator(sb, 1);
+        appendSeparator(sb, lineLength, "-");
+        appendBreak(sb);
 
         // lines
         for (String[] line : lines) {
             appendFormattedLine(sb, line, align, width, true);
         }
 
-        for (int i = 0; i < lineLength; i++)
-            sb.append("-");
-
-        appendSeparator(sb, 1);
+        appendSeparator(sb, lineLength, "-");
+        appendBreak(sb);
 
         // footer
         appendFormattedLine(sb, footer, align, width, false);
@@ -118,7 +115,16 @@ public class ShoppingCart{
         MONEY = new DecimalFormat("$#.00", symbols);
 
     }
+    private StringBuilder appendSeparator(StringBuilder sb, int lineLength, String separator){
+        for(int i = 0; i < lineLength; i++)
+            sb.append(separator);
+        return sb;
+    }
 
+    private StringBuilder appendBreak(StringBuilder sb){
+        sb.append("\n");
+        return sb;
+    }
     /** Appends to sb formatted value.
      *  Trims string if its length > width.
      * @param align -1 for align left, 0 for center and +1 for align right. 
@@ -246,7 +252,7 @@ public class ShoppingCart{
         for(int i = 0; i < line.length; i++)
             appendFormatted(sb, line[i], align[i], width[i]);
         if(newLine)
-            appendSeparator(sb, 1);
+            appendBreak(sb);
     }
 
     private double calculateItemsParameters() {
